@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="AI Smart Interview System — Practice interviews with AI-powered feedback and evaluation">
+    <title>AI Smart Interview System</title>
+    <link rel="stylesheet" href="/static/css/style.css?v=3.7">
+    <link rel="icon" href="/static/img/logo.jpg" type="image/jpeg">
+</head>
+
+<body>
+
+    <div id="app" class="app">
+        <!-- ══════════════════════════════════════════════════════
+         TOAST CONTAINER
+         ══════════════════════════════════════════════════════ -->
+        <div id="toast-container" class="toast-container"></div>
+
+        <!-- ══════════════════════════════════════════════════════
+         LOADING OVERLAY
+         ══════════════════════════════════════════════════════ -->
+        <div id="loading-overlay" class="loading-overlay hidden">
+            <div class="spinner spinner-lg"></div>
+            <p id="loading-text">Loading...</p>
+        </div>
+
+
+        <!-- ══════════════════════════════════════════════════════
+         AUTH SCREEN (Login / Register)
+         ══════════════════════════════════════════════════════ -->
+        <div id="auth-screen" class="auth-layout screen active">
+            <div class="auth-card">
+                <div class="auth-logo">
+                    <img src="/static/img/logo.jpg" alt="AI Smart Interview System Logo" id="auth-logo-img">
+                    <h1>AI Smart Interview</h1>
+                    <p>Practice smarter. Interview better.</p>
+                </div>
+
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login" id="tab-login">Login</button>
+                    <button class="auth-tab" data-tab="register" id="tab-register">Register</button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form active" autocomplete="off">
+                    <div class="form-group">
+                        <label class="form-label" for="login-email">Email</label>
+                        <input type="email" id="login-email" class="form-input" placeholder="you@college.edu" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="login-password">Password</label>
+                        <input type="password" id="login-password" class="form-input" placeholder="Enter your password"
+                            required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg" style="width:100%" id="login-btn">
+                        🚀 Login
+                    </button>
+                </form>
+
+                <!-- Register Form -->
+                <form id="register-form" class="auth-form" autocomplete="off">
+                    <div class="form-group">
+                        <label class="form-label" for="reg-name">Full Name</label>
+                        <input type="text" id="reg-name" class="form-input" placeholder="Your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="reg-college">College Name</label>
+                        <input type="text" id="reg-college" class="form-input" placeholder="Your college name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="reg-email">Email</label>
+                        <input type="email" id="reg-email" class="form-input" placeholder="you@college.edu" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="reg-password">Password</label>
+                        <input type="password" id="reg-password" class="form-input" placeholder="Min 4 characters"
+                            required minlength="4">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg" style="width:100%" id="register-btn">
+                        ✨ Create Account
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    AI Smart Interview System &copy; 2026
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ══════════════════════════════════════════════════════
+         DASHBOARD LAYOUT (Sidebar + Content)
+         ══════════════════════════════════════════════════════ -->
+        <div id="dashboard-layout" class="dashboard-layout hidden">
+
+            <!-- Mobile Toggle -->
+            <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle menu">☰</button>
+
+            <!-- Sidebar -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-brand">
+                    <img src="/static/img/logo.jpg" alt="Logo">
+                    <div>
+                        <h2>AI Interview</h2>
+                        <span>Smart Practice Platform</span>
+                    </div>
+                </div>
+
+                <nav class="sidebar-nav">
+                    <button class="nav-item active" data-screen="dashboard" id="nav-dashboard">
+                        <span class="nav-icon">📊</span> Dashboard
+                    </button>
+                    <button class="nav-item" data-screen="profile" id="nav-profile">
+                        <span class="nav-icon">👤</span> My Profile
+                    </button>
+                    <button class="nav-item" data-screen="interview-setup" id="nav-interview">
+                        <span class="nav-icon">🎯</span> New Interview
+                    </button>
+                    <button class="nav-item" data-screen="history" id="nav-history">
+                        <span class="nav-icon">📋</span> History
+                    </button>
+                </nav>
+
+                <div class="sidebar-footer">
+                    <div class="sidebar-user">
+                        <div class="sidebar-user-avatar" id="sidebar-avatar">S</div>
+                        <div class="sidebar-user-info">
+                            <div class="sidebar-user-name" id="sidebar-name">Student</div>
+                            <div class="sidebar-user-email" id="sidebar-email">student@email.com</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-ghost btn-sm mt-sm" style="width:100%" id="logout-btn">
+                        🚪 Logout
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Insecure Origin Alert Banner (shown when accessed via custom host/IP without SSL in Chrome) -->
+            <div id="insecure-origin-banner" class="insecure-origin-banner hidden">
+                <span>⚠️ <strong>WebRTC Security Notice:</strong> Chrome & Edge disable camera/mic on non-secure
+                    origins.</span>
+                <a id="insecure-origin-link" href="http://localhost:5000" class="btn btn-primary btn-sm">
+                    Switch to http://localhost:5000
+                </a>
+            </div>
+
+            <!-- Main Content -->
+            <main class="main-content">
+
+                <!-- ── Dashboard Screen ──────────────────────── -->
+                <div id="screen-dashboard" class="screen active">
+                    <div class="page-header">
+                        <h1 id="welcome-heading">Welcome back! 👋</h1>
+                        <p>Ready to ace your next interview? Let's practice.</p>
+                    </div>
+
+                    <div class="welcome-card card">
+                        <h2>🚀 Start Practicing</h2>
+                        <p>Choose an interview type and get instant AI-powered feedback on your performance.</p>
+                        <button class="btn btn-primary btn-lg" id="start-practice-btn">
+                            🎯 Start New Interview
+                        </button>
+                    </div>
+
+                    <div class="dashboard-grid stagger">
+                        <div class="card stat-card">
+                            <div class="stat-card-icon blue">🎤</div>
+                            <div class="stat-card-value" id="stat-total">0</div>
+                            <div class="stat-card-label">Total Interviews</div>
+                        </div>
+                        <div class="card stat-card">
+                            <div class="stat-card-icon green">📈</div>
+                            <div class="stat-card-value" id="stat-avg">—</div>
+                            <div class="stat-card-label">Average Score</div>
+                        </div>
+                        <div class="card stat-card">
+                            <div class="stat-card-icon purple">🏆</div>
+                            <div class="stat-card-value" id="stat-best">—</div>
+                            <div class="stat-card-label">Best Score</div>
+                        </div>
+                        <div class="card stat-card">
+                            <div class="stat-card-icon orange">🔥</div>
+                            <div class="stat-card-value" id="stat-readiness">—</div>
+                            <div class="stat-card-label">Readiness</div>
+                        </div>
+                    </div>
+
+                    <h3 style="font-size:1rem;font-weight:700;margin-bottom:var(--space-md)">Quick Actions</h3>
+                    <div class="quick-actions stagger">
+                        <div class="card card-interactive quick-action-card" data-action="interview" data-type="hr">
+                            <span class="icon">💼</span>
+                            <h4>HR Interview</h4>
+                            <p>Behavioral & situational</p>
+                        </div>
+                        <div class="card card-interactive quick-action-card" data-action="interview"
+                            data-type="technical">
+                            <span class="icon">💻</span>
+                            <h4>Technical Interview</h4>
+                            <p>CS fundamentals & design</p>
+                        </div>
+                        <div class="card card-interactive quick-action-card" data-action="interview" data-type="coding">
+                            <span class="icon">🧩</span>
+                            <h4>Coding Interview</h4>
+                            <p>Algorithms & problem solving</p>
+                        </div>
+                        <div class="card card-interactive quick-action-card" data-action="interview"
+                            data-type="communication">
+                            <span class="icon">🗣️</span>
+                            <h4>Communication</h4>
+                            <p>Verbal & presentation skills</p>
+                        </div>
+                    </div>
+
+                    <footer class="app-footer">
+                        <h4>AI Smart Interview System</h4>
+                        <p>Developed by: <span id="footer-dev">Your Name</span> | <span id="footer-college">Your
+                                College</span></p>
+                    </footer>
+                </div>
+
+
+                <!-- ── Profile Screen ────────────────────────── -->
+                <div id="screen-profile" class="screen">
+                    <div class="page-header">
+                        <h1>My Profile 👤</h1>
+                        <p>Complete your profile for personalized interview questions.</p>
+                    </div>
+
+                    <form id="profile-form" class="profile-grid">
+                        <div class="card card-body">
+                            <div class="form-group">
+                                <label class="form-label" for="profile-name">Full Name</label>
+                                <input type="text" id="profile-name" class="form-input" placeholder="Your full name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="profile-college">College</label>
+                                <input type="text" id="profile-college" class="form-input"
+                                    placeholder="Your college name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="profile-branch">Branch</label>
+                                <input type="text" id="profile-branch" class="form-input"
+                                    placeholder="e.g. Computer Science">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="profile-year">Year</label>
+                                <select id="profile-year" class="form-input">
+                                    <option value="">Select year</option>
+                                    <option value="1st Year">1st Year</option>
+                                    <option value="2nd Year">2nd Year</option>
+                                    <option value="3rd Year">3rd Year</option>
+                                    <option value="4th Year">4th Year</option>
+                                    <option value="Postgraduate">Postgraduate</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="card card-body">
+                            <div class="form-group">
+                                <label class="form-label">Skills</label>
+                                <div class="skills-tags" id="skills-tags"></div>
+                                <div class="skills-input-wrapper">
+                                    <input type="text" id="skill-input" class="form-input"
+                                        placeholder="Type a skill and press Enter">
+                                    <button type="button" class="btn btn-secondary btn-sm"
+                                        id="add-skill-btn">Add</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="profile-goal">Career Goal</label>
+                                <textarea id="profile-goal" class="form-input"
+                                    placeholder="e.g. Full-stack developer at a top tech company" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Resume</label>
+                                <div class="resume-upload" id="resume-drop-zone">
+                                    <span class="icon">📄</span>
+                                    <p>Drag & drop or click to upload (PDF, DOC, DOCX)</p>
+                                    <p class="file-name" id="resume-filename"></p>
+                                    <input type="file" id="resume-file" accept=".pdf,.doc,.docx" style="display:none">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="profile-form-card" style="grid-column: 1/-1">
+                            <button type="submit" class="btn btn-primary btn-lg" id="save-profile-btn">
+                                💾 Save Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+
+                <!-- ── Interview Setup Screen ────────────────── -->
+                <div id="screen-interview-setup" class="screen">
+                    <div class="page-header">
+                        <h1>New Interview 🎯</h1>
+                        <p>Select your interview type, difficulty, and number of questions.</p>
+                    </div>
+
+                    <h3 style="font-size:1rem;font-weight:700;margin-bottom:var(--space-md)">Choose Interview Type</h3>
+                    <div class="interview-types-grid stagger" id="interview-types">
+                        <div class="card card-interactive interview-type-card" data-type="hr">
+                            <span class="type-icon">💼</span>
+                            <h3>HR Interview</h3>
+                            <p>Behavioral, situational, and personality questions</p>
+                        </div>
+                        <div class="card card-interactive interview-type-card" data-type="technical">
+                            <span class="type-icon">💻</span>
+                            <h3>Technical</h3>
+                            <p>Data structures, algorithms, system design</p>
+                        </div>
+                        <div class="card card-interactive interview-type-card" data-type="coding">
+                            <span class="type-icon">🧩</span>
+                            <h3>Coding</h3>
+                            <p>Problem solving, coding challenges, logic</p>
+                        </div>
+                        <div class="card card-interactive interview-type-card" data-type="communication">
+                            <span class="type-icon">🗣️</span>
+                            <h3>Communication</h3>
+                            <p>Verbal skills, presentation, articulation</p>
+                        </div>
+                        <div class="card card-interactive interview-type-card" data-type="general">
+                            <span class="type-icon">📚</span>
+                            <h3>General</h3>
+                            <p>Industry awareness, career goals, soft skills</p>
+                        </div>
+                    </div>
+
+                    <h3 style="font-size:1rem;font-weight:700;margin-bottom:var(--space-md)">Select Difficulty</h3>
+                    <div class="difficulty-selector" id="difficulty-selector">
+                        <button type="button" class="difficulty-btn easy" data-difficulty="easy">🟢 Easy</button>
+                        <button type="button" class="difficulty-btn medium selected" data-difficulty="medium">🟡
+                            Medium</button>
+                        <button type="button" class="difficulty-btn hard" data-difficulty="hard">🔴 Hard</button>
+                    </div>
+
+                    <h3 style="font-size:1rem;font-weight:700;margin-bottom:var(--space-md)">Number of Questions</h3>
+                    <div class="question-count">
+                        <div class="count-display" id="question-count-display">5</div>
+                        <input type="range" id="question-count-slider" min="3" max="15" value="5">
+                        <div class="flex justify-between" style="font-size:0.75rem;color:var(--text-muted)">
+                            <span>3</span>
+                            <span>15</span>
+                        </div>
+                    </div>
+
+                    <h3 style="font-size:1rem;font-weight:700;margin-bottom:var(--space-md)">Device Check (Camera &
+                        Audio)</h3>
+                    <div class="card setup-device-card">
+                        <div class="setup-device-preview-wrapper">
+                            <video id="setup-camera-preview" class="setup-camera-preview hidden" autoplay playsinline
+                                muted></video>
+                            <div id="setup-camera-fallback" class="setup-camera-fallback">
+                                <span style="font-size:2rem">📹</span>
+                                <p id="setup-camera-msg"
+                                    style="font-size:0.875rem;color:var(--text-muted);margin-top:var(--space-xs)">Camera
+                                    preview is inactive</p>
+                            </div>
+                        </div>
+                        <div class="setup-device-controls">
+                            <button type="button" class="btn btn-secondary btn-sm" id="test-camera-btn"
+                                onclick="initCameraPreview()">
+                                📷 Test Camera
+                            </button>
+                            <button type="button" class="btn btn-ghost btn-sm" id="stop-camera-preview-btn"
+                                onclick="stopCameraPreview()">
+                                Stop Preview
+                            </button>
+                            <select id="setup-camera-device-select" class="camera-device-select hidden"
+                                title="Select camera device"></select>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-xl">
+                        <button class="btn btn-primary btn-lg" id="begin-interview-btn" disabled>
+                            🎬 Begin Interview
+                        </button>
+                    </div>
+                </div>
+
+
+                <!-- ── Interview Active Screen ───────────────── -->
+                <div id="screen-interview" class="screen">
+
+                    <!-- Top Executive HUD Bar -->
+                    <div class="interview-hud-bar">
+                        <div class="hud-left">
+                            <div class="hud-brand">
+                                <span class="hud-brand-icon">🤖</span>
+                                <span class="hud-brand-title">AI Smart Interview</span>
+                            </div>
+                            <span class="hud-divider">|</span>
+                            <span class="hud-info" id="interview-type-display">HR Interview • Medium</span>
+                        </div>
+
+                        <div class="hud-center">
+                            <div class="hud-progress-wrap">
+                                <div class="hud-progress-meta">
+                                    <span id="progress-text">Question 1 of 5</span>
+                                    <span id="interview-status-badge" class="badge badge-blue">In Progress</span>
+                                </div>
+                                <div class="progress-bar hud-progress-bar">
+                                    <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hud-right">
+                            <div class="hud-timer" id="interview-timer">
+                                <span class="timer-icon">⏱️</span>
+                                <span id="timer-display">00:00</span>
+                            </div>
+                            <div class="hud-mic-chip active" id="top-status-listening">
+                                <span class="mic-dot"></span>
+                                <span id="hud-mic-label">🎙️ Mic Active</span>
+                            </div>
+                            <span class="top-status-item hidden" id="top-status-camera">📷 Camera On</span>
+                            <button type="button" class="btn btn-ghost btn-sm exit-interview-btn"
+                                id="exit-interview-btn" onclick="openExitModal()" title="Exit interview">
+                                ✕ Exit
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dual-Stage Executive Suite: AI Robot (Left) vs Candidate (Right) -->
+                    <div class="interview-container interview-stage-grid">
+
+                        <!-- ══ LEFT STAGE: AI 3D Robot Interviewer ══ -->
+                        <div class="interview-stage-card robot-stage-card" id="interview-left-panel">
+                            <div class="stage-card-header">
+                                <div class="robot-header-identity">
+                                    <div class="robot-state-pill state-idle" id="robot-state-pill">
+                                        <span class="state-dot"></span>
+                                        <span id="robot-state-text">🤖 Ready for your interview</span>
+                                    </div>
+                                </div>
+                                <div class="stage-badge-ai">
+                                    <span class="ai-pulse-dot"></span> AI INTERVIEWER
+                                </div>
+                            </div>
+
+                            <!-- 3D Robot Viewport Canvas -->
+                            <div class="robot-viewport-wrapper" id="robot-viewport-wrapper">
+                                <div id="robot-canvas-container" class="robot-canvas-container"></div>
+
+                                <!-- Visual sound wave halo behind robot head -->
+                                <div class="robot-voice-aura" id="robot-voice-aura"></div>
+
+                                <!-- Fallback image in case WebGL is disabled -->
+                                <div id="robot-canvas-fallback" class="robot-canvas-fallback hidden">
+                                    <img src="/static/img/ai_avatar.jpg" alt="AI Interviewer"
+                                        class="ai-avatar-fallback">
+                                </div>
+
+                                <!-- Hidden legacy hooks for JS compatibility -->
+                                <img src="/static/img/ai_avatar.jpg" id="ai-avatar-img" class="hidden" alt="AI">
+                                <div id="ai-speaking-indicator" class="hidden"></div>
+                                <div id="ai-typing" class="hidden"></div>
+                                <div id="your-turn-indicator" class="hidden"></div>
+                            </div>
+
+                            <!-- Live Subtitles Ribbon directly below Robot Viewport -->
+                            <div class="robot-subtitles-bar" id="robot-subtitles-bar">
+                                <span class="subtitles-label">AI INTERVIEWER:</span>
+                                <div class="robot-subtitles" id="robot-subtitles">“Welcome to your interview. Let’s
+                                    begin.”</div>
+                            </div>
+                        </div>
+
+                        <!-- ══ RIGHT STAGE: Candidate Webcam & Live Audio Waveform ══ -->
+                        <div class="interview-stage-card candidate-stage-card" id="interview-right-panel">
+                            <div class="stage-card-header">
+                                <div class="candidate-header-identity">
+                                    <span class="candidate-status-indicator on" id="camera-status-dot"></span>
+                                    <span class="candidate-header-name">Candidate Feed (You)</span>
+                                    <span class="camera-status-text" id="camera-status-text">Live</span>
+                                </div>
+                                <div class="stage-badge-you">APPLICANT</div>
+                            </div>
+
+                            <!-- Candidate Video Wrapper -->
+                            <div class="candidate-video-wrapper">
+                                <video id="candidate-video" class="candidate-video" autoplay playsinline muted></video>
+
+                                <!-- Black Frame Warning Overlay -->
+                                <div id="camera-black-frame-alert" class="camera-black-alert hidden">
+                                    <span style="font-size:1.5rem">📷🔒</span>
+                                    <p style="font-weight:600;margin:2px 0;color:#fef08a">Black Video Feed Detected</p>
+                                    <p style="font-size:0.75rem;color:#cbd5e1;line-height:1.4;margin:0">
+                                        Check if your laptop's physical privacy slider or Fn camera key is closed, or
+                                        select another camera below.
+                                    </p>
+                                </div>
+
+                                <!-- Fallback (shown when camera is unavailable) -->
+                                <div class="candidate-fallback" id="candidate-fallback">
+                                    <div class="fallback-avatar">
+                                        <svg width="56" height="56" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                            stroke-linejoin="round" aria-hidden="true">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                    </div>
+                                    <p id="candidate-fallback-msg">Camera will activate when the interview begins</p>
+                                    <div id="candidate-fallback-actions" class="candidate-fallback-actions"></div>
+                                </div>
+
+                                <!-- Floating Camera Controls Overlay -->
+                                <div class="candidate-video-controls-overlay">
+                                    <select id="camera-device-select" class="camera-device-select hidden"
+                                        title="Select camera device"></select>
+                                    <button class="camera-control-btn" id="camera-toggle-btn" title="Toggle camera"
+                                        aria-label="Toggle camera on or off">
+                                        📷
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Candidate Live Audio Waveform & Status Bar -->
+                            <div class="candidate-audio-bar">
+                                <div class="audio-waveform-header">
+                                    <div class="flex items-center gap-xs">
+                                        <span class="audio-mic-icon">🎙️</span>
+                                        <span class="audio-waveform-title">Candidate Microphone Waveform</span>
+                                    </div>
+                                    <span class="audio-waveform-status" id="audio-waveform-status">Listening for
+                                        speech...</span>
+                                </div>
+                                <div class="waveform-canvas-wrap">
+                                    <canvas id="candidate-audio-waveform" class="candidate-audio-waveform" width="480"
+                                        height="46"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- ══ INTERACTION DOCK: Question Card, Live Transcript & Controls ══ -->
+                    <div class="interview-dock-container">
+
+                        <!-- Question Card -->
+                        <div class="card question-card" id="question-card">
+                            <div class="question-header-row">
+                                <div class="flex items-center gap-sm">
+                                    <div class="question-number" id="question-number">Question 1</div>
+                                    <div class="question-followup-badge hidden" id="followup-badge">
+                                        🔄 Follow-up Question
+                                    </div>
+                                </div>
+                                <div class="voice-controls" id="voice-controls">
+                                    <button type="button" class="btn btn-secondary btn-sm" id="replay-voice-btn"
+                                        title="Replay Question">🔊 Replay</button>
+                                    <button type="button" class="btn btn-secondary btn-sm" id="stop-voice-btn"
+                                        title="Stop Voice">🔇 Stop</button>
+                                </div>
+                            </div>
+
+                            <div class="question-text" id="question-text">Loading question...</div>
+
+                            <!-- Live Speech Transcript Bubble -->
+                            <div class="candidate-transcript-container" id="candidate-transcript-container">
+                                <div class="transcript-header">
+                                    <div class="flex items-center gap-xs">
+                                        <span class="transcript-pulse-dot"></span>
+                                        <span class="transcript-label">Live Spoken Answer Transcript</span>
+                                    </div>
+                                    <button type="button" class="transcript-toggle-btn" id="transcript-toggle-btn">
+                                        ✏️ Edit / Type Directly
+                                    </button>
+                                </div>
+                                <div class="transcript-preview" id="transcript-preview">
+                                    <span class="transcript-placeholder" id="transcript-placeholder">
+                                        🎙️ Speak naturally through your microphone. Your words will be transcribed in
+                                        real time.
+                                    </span>
+                                    <span class="transcript-content" id="transcript-content"></span>
+                                </div>
+                            </div>
+
+                            <!-- Answer Input Textarea (always syncs with speech recognition, can be directly typed) -->
+                            <div class="answer-area" id="answer-area">
+                                <div class="flex justify-between items-center mb-xs"
+                                    style="font-size: 0.813rem; color: var(--text-muted);">
+                                    <span>✍️ Type your answer below or use 🎤 microphone</span>
+                                    <span>⌨️ Shortcut: <kbd
+                                            style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">Ctrl+Enter</kbd>
+                                        to submit</span>
+                                </div>
+                                <textarea id="answer-input" class="form-input"
+                                    placeholder="Type your answer here or click 🎤 to speak... You can edit freely at any time."></textarea>
+                            </div>
+
+                            <div class="answer-controls">
+                                <button type="button" class="btn btn-secondary mic-btn" id="mic-btn"
+                                    onclick="toggleMicRecording()" title="Click to speak your answer with microphone">
+                                    <span class="mic-btn-icon" id="mic-btn-icon">🎤</span>
+                                    <span class="mic-btn-label" id="mic-btn-label">Answer with Voice</span>
+                                </button>
+                                <div class="mic-listening-indicator hidden" id="mic-listening-indicator">
+                                    <span class="listening-pulse-dot"></span>
+                                    <span class="listening-text">Listening... speak your answer</span>
+                                    <div class="sound-wave-bars">
+                                        <span></span><span></span><span></span><span></span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-success btn-lg" id="done-speaking-btn"
+                                    title="Complete speaking and submit your response">
+                                    🏁 Done Speaking &amp; Submit
+                                </button>
+                                <button class="btn btn-primary" id="submit-answer-btn">
+                                    ✅ Submit Answer
+                                </button>
+                                <button class="btn btn-secondary hidden" id="next-question-btn">
+                                    ➡️ Next Question
+                                </button>
+                                <button class="btn btn-primary hidden" id="finish-dashboard-btn"
+                                    onclick="finishInterview('dashboard')" style="font-weight:700;">
+                                    📊 Back to Dashboard
+                                </button>
+                                <button class="btn btn-secondary hidden" id="finish-history-btn"
+                                    onclick="finishInterview('history')">
+                                    📋 View History
+                                </button>
+                                <button class="btn btn-ghost hidden" id="finish-interview-btn"
+                                    onclick="finishInterview('results')">
+                                    🏆 View Report
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Per-question Evaluation (shown after answering) -->
+                        <div class="card interview-evaluation hidden" id="answer-evaluation">
+                            <div class="eval-header">
+                                <div class="eval-header-title">
+                                    <span class="eval-header-icon">🎯</span>
+                                    <h4>AI Answer Evaluation</h4>
+                                </div>
+                                <div class="eval-header-badges">
+                                    <div class="eval-score-chip" id="eval-score-chip">
+                                        <span class="eval-score-label">Score:</span>
+                                        <span class="eval-score-val" id="eval-score">0 / 10</span>
+                                    </div>
+                                    <span class="badge eval-status-badge" id="eval-status">Good</span>
+                                </div>
+                            </div>
+
+                            <!-- Adaptive Follow-on Notification Banner -->
+                            <div class="eval-adaptive-notice hidden" id="eval-adaptive-notice"
+                                style="margin-bottom: var(--space-md); padding: 10px 14px; background: rgba(37, 99, 235, 0.12); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: var(--radius-md); display: flex; align-items: center; gap: 10px; font-size: 0.875rem; color: #93c5fd;">
+                                <span style="font-size: 1.1rem;">🎯</span>
+                                <span id="eval-adaptive-notice-text">Next question dynamically generated based on your answer.</span>
+                            </div>
+
+                            <!-- Prominent Assessment Verdict Banner: Clearly shows "Good", "Excellent", "Average", or "Needs Improvement" -->
+                            <div class="eval-verdict-banner eval-verdict-good" id="eval-verdict-banner">
+                                <div class="verdict-icon-wrap" id="eval-verdict-icon-wrap">
+                                    <span class="verdict-icon" id="eval-verdict-icon">👍</span>
+                                </div>
+                                <div class="verdict-text-group">
+                                    <div class="verdict-headline" id="eval-verdict-headline">Result: Good Answer</div>
+                                    <div class="verdict-subtext" id="eval-verdict-subtext">Solid response that clearly
+                                        addresses the question.</div>
+                                </div>
+                                <div class="verdict-quality-tag" id="eval-verdict-tag">
+                                    GOOD
+                                </div>
+                            </div>
+
+                            <!-- Top Auto-Close Countdown Alert Banner -->
+                            <div class="eval-completion-alert hidden" id="eval-completion-top-alert">
+                                <div class="completion-alert-icon">🎉</div>
+                                <div class="completion-alert-content">
+                                    <div class="completion-alert-title">
+                                        Interview Completed! All questions answered.
+                                    </div>
+                                    <div class="completion-alert-desc">
+                                        Closing interview room and returning to Dashboard in <span
+                                            class="countdown-seconds-badge" id="auto-close-countdown-num">5</span>s...
+                                    </div>
+                                </div>
+                                <div class="completion-alert-actions"
+                                    style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                                    <button type="button" class="btn btn-primary btn-sm" id="auto-close-dashboard-btn"
+                                        onclick="finishInterview('dashboard')">
+                                        📊 Dashboard (5s)
+                                    </button>
+                                    <button type="button" class="btn btn-secondary btn-sm" id="auto-close-history-btn"
+                                        onclick="finishInterview('history')">
+                                        📋 History
+                                    </button>
+                                    <button type="button" class="btn btn-ghost btn-sm" id="auto-close-report-btn"
+                                        onclick="finishInterview('results')" title="View detailed score report">
+                                        🏆 Report
+                                    </button>
+                                    <button type="button" class="btn btn-ghost btn-sm" id="auto-close-pause-btn"
+                                        onclick="pauseAutoClose()">
+                                        ⏸️ Pause
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Mismatched Alert Banner -->
+                            <div class="eval-mismatch-banner hidden" id="eval-mismatch-banner">
+                                <span class="mismatch-icon">⚠️</span>
+                                <div class="mismatch-content">
+                                    <strong id="eval-mismatch-title">Incorrect / Mismatched Answer</strong>
+                                    <p id="eval-mismatch-text">Your answer does not address the question being asked.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="eval-details-grid">
+                                <!-- Question Reference -->
+                                <div class="eval-field eval-field-question">
+                                    <div class="eval-field-label">📌 Question</div>
+                                    <div class="eval-field-content" id="eval-question-text">—</div>
+                                </div>
+
+                                <!-- Candidate Answer -->
+                                <div class="eval-field eval-field-answer">
+                                    <div class="eval-field-label">👤 Your Answer</div>
+                                    <div class="eval-field-content" id="eval-user-answer">—</div>
+                                </div>
+
+                                <!-- AI Evaluation / Explanation -->
+                                <div class="eval-field eval-field-explanation">
+                                    <div class="eval-field-label">🤖 AI Evaluation</div>
+                                    <div class="eval-field-content" id="eval-feedback">—</div>
+                                </div>
+
+                                <!-- Sub-scores Pills -->
+                                <div class="eval-subscores" id="eval-subscores">
+                                    <div class="subscore-pill" id="subscore-tech">
+                                        <span class="subscore-label">Technical</span>
+                                        <span class="subscore-val" id="sub-val-tech">0/10</span>
+                                    </div>
+                                    <div class="subscore-pill" id="subscore-comm">
+                                        <span class="subscore-label">Communication</span>
+                                        <span class="subscore-val" id="sub-val-comm">0/10</span>
+                                    </div>
+                                    <div class="subscore-pill" id="subscore-relevance">
+                                        <span class="subscore-label">Relevance</span>
+                                        <span class="subscore-val" id="sub-val-rel">0/10</span>
+                                    </div>
+                                    <div class="subscore-pill" id="subscore-clarity">
+                                        <span class="subscore-label">Clarity</span>
+                                        <span class="subscore-val" id="sub-val-clarity">0/10</span>
+                                    </div>
+                                </div>
+
+                                <!-- Perfect Answer -->
+                                <div class="eval-field eval-perfect-card" id="eval-perfect-card">
+                                    <div class="eval-field-label">
+                                        <span class="gold-star">⭐</span> Perfect Answer (Ideal Response)
+                                    </div>
+                                    <div class="eval-perfect-content" id="eval-perfect-answer">—</div>
+                                </div>
+
+                                <!-- How to Improve -->
+                                <div class="eval-field eval-improve-card" id="eval-improve-card">
+                                    <div class="eval-field-label">
+                                        <span>💡</span> How to Improve
+                                    </div>
+                                    <div class="eval-improve-content" id="eval-improvement">—</div>
+                                </div>
+                            </div>
+
+                            <!-- ══ Evaluation Action Footer (Unmistakable Next / Finish Controls) ══ -->
+                            <div class="eval-action-footer" id="eval-action-footer"
+                                style="margin-top:var(--space-xl);padding-top:var(--space-lg);border-top:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--space-md);">
+                                <div id="eval-completion-banner" class="hidden"
+                                    style="color:#10b981;font-weight:700;font-size:1rem;display:flex;align-items:center;gap:8px;">
+                                    <span>🎉</span> <span>All questions answered! Returning to Dashboard in <strong
+                                            id="eval-bottom-countdown">5s</strong>...</span>
+                                </div>
+                                <div class="flex gap-md" style="margin-left:auto;flex-wrap:wrap">
+                                    <button type="button" class="btn btn-secondary btn-lg hidden" id="eval-next-btn"
+                                        onclick="nextQuestionFromEval()">
+                                        ➡️ Next Question
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-lg hidden" id="eval-dashboard-btn"
+                                        onclick="finishInterview('dashboard')"
+                                        style="box-shadow:0 4px 16px rgba(37,99,235,0.45);font-weight:700;">
+                                        📊 Back to Dashboard
+                                    </button>
+                                    <button type="button" class="btn btn-secondary btn-lg hidden" id="eval-history-btn"
+                                        onclick="finishInterview('history')">
+                                        📋 View History
+                                    </button>
+                                    <button type="button" class="btn btn-ghost btn-lg hidden" id="eval-finish-btn"
+                                        onclick="finishInterview('results')">
+                                        🏆 Full Report
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ── Results Screen ────────────────────────── -->
+                <div id="screen-results" class="screen">
+                    <div class="page-header"
+                        style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--space-md);">
+                        <div>
+                            <h1>Interview Results 🏆</h1>
+                            <p>Here's your detailed performance analysis.</p>
+                        </div>
+                        <div class="flex gap-sm">
+                            <button type="button" class="btn btn-primary" onclick="navigateTo('dashboard')">
+                                📊 Back to Dashboard
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="navigateTo('history')">
+                                📋 View History
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Overall Score -->
+                    <div class="card results-header new-result-card">
+                        <div class="result-card-top">
+                            <div class="result-score-container">
+                                <h2 class="result-score-title">🎯 Interview Score</h2>
+                                <div class="result-score-large">
+                                    <span id="overall-score-1000">0</span> <span class="score-out-of">/ 1000</span>
+                                </div>
+                            </div>
+                            <div class="result-status-container" id="result-status-badge">
+                                🟢 EXCELLENT
+                            </div>
+                        </div>
+
+                        <div class="result-progress-container">
+                            <div class="progress-bar progress-bar-lg result-progress-bar-bg">
+                                <div class="progress-bar-fill" id="overall-score-bar" style="width:0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="result-feedback-message">
+                            <p id="result-short-feedback"></p>
+                        </div>
+
+                        <p style="margin-top:var(--space-md);color:var(--text-secondary);font-size:0.875rem;"
+                            id="result-interview-info"></p>
+                    </div>
+
+                    <div class="results-grid stagger">
+                        <!-- Score Breakdown -->
+                        <div class="card score-breakdown">
+                            <h3>📊 Score Breakdown</h3>
+                            <div id="score-breakdown-list"></div>
+                        </div>
+
+                        <!-- Readiness Gauge -->
+                        <div class="card readiness-gauge">
+                            <h3>🎯 Interview Readiness</h3>
+                            <div class="score-circle" style="margin:var(--space-lg) auto">
+                                <svg width="140" height="140">
+                                    <circle class="score-circle-bg" cx="70" cy="70" r="60"></circle>
+                                    <circle class="score-circle-fill" cx="70" cy="70" r="60"
+                                        stroke="url(#readinessGradient)" stroke-dasharray="377" stroke-dashoffset="377"
+                                        id="readiness-circle-fill"></circle>
+                                    <defs>
+                                        <linearGradient id="readinessGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="#10b981" />
+                                            <stop offset="100%" stop-color="#06b6d4" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <div class="score-circle-text">
+                                    <div class="score-circle-value" id="readiness-value" style="font-size:1.5rem">0%
+                                    </div>
+                                    <div class="score-circle-label">Ready</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Strengths -->
+                        <div class="card feedback-card">
+                            <h3>💪 Strengths</h3>
+                            <ul id="strengths-list"></ul>
+                        </div>
+
+                        <!-- Weaknesses -->
+                        <div class="card feedback-card">
+                            <h3>🔧 Areas to Improve</h3>
+                            <ul id="weaknesses-list"></ul>
+                        </div>
+
+                        <!-- Improvements -->
+                        <div class="card feedback-card">
+                            <h3>📝 Improvement Tips</h3>
+                            <ul id="improvements-list"></ul>
+                        </div>
+
+                        <!-- Recommendations -->
+                        <div class="card feedback-card">
+                            <h3>📚 Recommended Topics</h3>
+                            <ul id="recommendations-list"></ul>
+                        </div>
+
+                        <!-- Feedback Summary -->
+                        <div class="card feedback-summary-card">
+                            <h3>🤖 AI Feedback</h3>
+                            <p id="feedback-summary-text"></p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-md justify-center mt-xl" style="flex-wrap:wrap">
+                        <button class="btn btn-primary" id="results-new-interview-btn">🎯 New Interview</button>
+                        <button class="btn btn-secondary" id="results-dashboard-btn">📊 Dashboard</button>
+                        <button class="btn btn-secondary" id="results-history-btn">📋 View History</button>
+                    </div>
+
+                    <footer class="app-footer">
+                        <h4>AI Smart Interview System</h4>
+                        <p>Developed by: <span class="footer-dev">Your Name</span> | <span class="footer-college">Your
+                                College</span></p>
+                    </footer>
+                </div>
+
+
+                <!-- ── History Screen ────────────────────────── -->
+                <div id="screen-history" class="screen">
+                    <div class="page-header">
+                        <h1>Interview History 📋</h1>
+                        <p>Track your progress and review past interviews.</p>
+                    </div>
+
+                    <!-- Progress Chart -->
+                    <div class="card history-chart-card" id="history-chart-wrapper">
+                        <h3>📈 Performance Over Time</h3>
+                        <div class="chart-container" id="history-chart"></div>
+                    </div>
+
+                    <!-- History Table -->
+                    <div class="card" style="padding:0;overflow:hidden">
+                        <div class="history-table-wrapper" id="history-table-wrapper">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <div id="history-empty" class="empty-state hidden">
+                        <span class="icon">📝</span>
+                        <h3>No interviews yet</h3>
+                        <p>Start your first practice interview to see your history here.</p>
+                        <button class="btn btn-primary" id="history-start-btn">🎯 Start Interview</button>
+                    </div>
+
+                    <footer class="app-footer">
+                        <h4>AI Smart Interview System</h4>
+                        <p>Developed by: <span class="footer-dev">Your Name</span> | <span class="footer-college">Your
+                                College</span></p>
+                    </footer>
+                </div>
+
+
+            </main>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════
+         TOP-LEVEL MODALS (Outside dashboard-layout)
+         ══════════════════════════════════════════════════════ -->
+
+        <!-- ── Interview Detail Modal ────────────────── -->
+        <div id="detail-modal" class="modal-overlay hidden" style="z-index: 99999 !important;">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 id="detail-modal-title">Interview Details</h3>
+                    <button type="button" class="btn btn-ghost btn-icon" id="close-detail-modal">✕</button>
+                </div>
+                <div class="modal-body" id="detail-modal-body">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="detail-modal-close-btn">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Exit Interview Confirmation Modal ──────── -->
+        <div id="exit-interview-modal" class="modal-overlay hidden" style="z-index: 99999 !important;">
+            <div class="modal modal-sm">
+                <div class="modal-header">
+                    <h3>Exit Interview?</h3>
+                    <button type="button" class="btn btn-ghost btn-icon" id="exit-modal-cancel"
+                        onclick="closeExitModal()" title="Close dialog">✕</button>
+                </div>
+                <div class="modal-body">
+                    <p style="color:var(--text-secondary);line-height:1.6;font-size:0.95rem;">
+                        Are you sure you want to exit the interview? Your current progress may be lost.
+                    </p>
+                </div>
+                <div class="modal-footer" style="display:flex;gap:10px;justify-content:flex-end;align-items:center;">
+                    <button type="button" class="btn btn-secondary" id="exit-modal-cancel-btn"
+                        onclick="closeExitModal()">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="exit-modal-confirm" onclick="quitInterview()">Exit
+                        Interview</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/static/js/three.min.js"></script>
+    <script src="/static/js/robot.js?v=3.2"></script>
+    <script src="/static/js/app.js?v=3.3"></script>
+    <script src="/static/js/auth.js?v=3.2"></script>
+    <script src="/static/js/profile.js?v=3.2"></script>
+    <script src="/static/js/camera.js?v=3.2"></script>
+    <script src="/static/js/interview_v4.js"></script>
+    <script src="/static/js/results.js?v=3.2"></script>
+    <script src="/static/js/history.js?v=3.2"></script>
+
+</body>
+
+</html>
