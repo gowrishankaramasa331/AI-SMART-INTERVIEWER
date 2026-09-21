@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+*.db
+.vscode/
+uploads/*
+!uploads/.gitkeep
+*.bat
+hosts_backup.txt
+.env

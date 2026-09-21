@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+*.db
+.vscode/
+.git/
+.gitignore
+*.bat
+hosts_backup.txt
+README.md
+uploads/*
+!uploads/.gitkeep
